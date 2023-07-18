@@ -14,6 +14,9 @@ public class Shoe {
     private String name;
 
     private String price;
+    public Shoe(){
+
+    }
 
     public Shoe(String id, String name, String src, String price) {
         this.id = id;

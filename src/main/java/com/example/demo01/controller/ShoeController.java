@@ -14,6 +14,10 @@ import java.util.Optional;
 public class ShoeController {
     @Autowired
     ShoeRepository repository;
+    @GetMapping("/hello")
+    ResponseEntity<String> hello(){
+        return ResponseEntity.ok("nice to meet u <3");
+    }
     @GetMapping("/AllShoes")
     ResponseEntity getAllShoes(){
         List<Shoe> listShoe = repository.findAll();
@@ -24,6 +28,31 @@ public class ShoeController {
         Optional<Shoe> shoeOptional = repository.findById("649464f8f81a903697c81340");
             return shoeOptional;
     }
+    @PostMapping("/addShoe")
+    ResponseEntity<String> createShoe(@RequestParam String name, @RequestParam String src, @RequestParam String price){
+        try {
+            Shoe createShoe = new Shoe();
+            createShoe.setPrice(price);
+            createShoe.setName(name);
+            createShoe.setSrc(src);
+            repository.save(createShoe);
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+       return ResponseEntity.ok("create a new shoe successfully!");
+    }
+
+    @DeleteMapping("/deleteShoe/{id}")
+    ResponseEntity<String> deleteShoe(@PathVariable String id){
+        try {
+            System.out.println(id);
+           repository.deleteById(id);
+           return ResponseEntity.ok("delete a shoe successfully!");
+        }catch (Exception e){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PutMapping("/updateShoe/{id}")
     ResponseEntity<String> updateShoe(@PathVariable String id,  @RequestParam("name") String name, @RequestParam("price") String price){
         Optional<Shoe> shoeOptional = repository.findById(id);
