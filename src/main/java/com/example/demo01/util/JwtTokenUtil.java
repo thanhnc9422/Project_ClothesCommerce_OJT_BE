@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.example.demo01.models.Customer;
+import com.example.demo01.repositories.CustomerRepository;
+import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,12 +18,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Component
 public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -2550185165626007488L;
 
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -28,6 +35,31 @@ public class JwtTokenUtil implements Serializable {
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    public Customer getCustomerFromRequestToken(HttpServletRequest request){
+        final String requestTokenHeader = request.getHeader("Authorization");
+
+        String username = null;
+        String jwtToken = null;
+        // JWT Token is in the form "Bearer token". Remove Bearer word and get
+        // only the Token
+        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+            jwtToken = requestTokenHeader.substring(7);
+            try {
+                username = getUsernameFromToken(jwtToken);
+                return customerRepository.findOneByUsername(username);
+            } catch (IllegalArgumentException e) {
+                System.out.println("Unable to get JWT Token");
+            } catch (ExpiredJwtException e) {
+                System.out.println("JWT Token has expired");
+            }
+        }
+        return null;
+    }
+    public String getUserRoleFromToken(String token) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claims.get("role").toString();
     }
 
     //retrieve expiration date from jwt token

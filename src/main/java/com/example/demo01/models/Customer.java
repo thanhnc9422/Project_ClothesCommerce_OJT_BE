@@ -11,15 +11,18 @@ public class Customer {
     private String password;
     private String role;
 
+    private String fullname;
+
     public Customer(){
 
     }
 
-    public Customer(String id, String username, String password, String role) {
+    public Customer(String id, String username, String password, String role, String fullname) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.fullname = fullname;
     }
 
     public String getId() {
@@ -52,5 +55,13 @@ public class Customer {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 }
