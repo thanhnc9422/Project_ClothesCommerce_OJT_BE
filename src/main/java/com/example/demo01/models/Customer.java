@@ -10,19 +10,22 @@ public class Customer {
     private String username;
     private String password;
     private String role;
-
     private String fullname;
+    private String img;
+    private String uidFb;
 
     public Customer(){
 
     }
 
-    public Customer(String id, String username, String password, String role, String fullname) {
+    public Customer(String id, String username, String password, String role, String fullname, String img, String uidFb) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
         this.fullname = fullname;
+        this.img = img;
+        this.uidFb = uidFb;
     }
 
     public String getId() {
@@ -63,5 +66,21 @@ public class Customer {
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public String getUidFb() {
+        return uidFb;
+    }
+
+    public void setUidFb(String uidFb) {
+        this.uidFb = uidFb;
     }
 }

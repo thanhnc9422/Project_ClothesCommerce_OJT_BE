@@ -12,17 +12,18 @@ public class Shoe {
     private String id;
     private String src;
     private String name;
-
     private String price;
+    private String size;
     public Shoe(){
 
     }
 
-    public Shoe(String id, String name, String src, String price) {
+    public Shoe(String id, String name, String src, String price, String size) {
         this.id = id;
         this.name = name;
         this.src = src;
         this.price = price;
+        this.size = size;
     }
 
     public String getId() {
@@ -55,5 +56,13 @@ public class Shoe {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 }

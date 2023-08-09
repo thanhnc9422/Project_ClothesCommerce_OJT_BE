@@ -35,28 +35,30 @@ public class CustomerController {
     Crypto crypto;
     @Autowired
     CustomerService customerService;
+
     @GetMapping("/getAllCustomers")
-    public ResponseEntity getAllCustomers(){
+    public ResponseEntity getAllCustomers() {
         List<Customer> customerList = customerRepository.findAll();
-       return   ResponseEntity.ok(customerList);
+        return ResponseEntity.ok(customerList);
     }
+
     @PostMapping("/login")
-    public ResponseEntity customerLogin(@RequestBody JwtRequest authenticationRequest, HttpServletResponse response){
+    public ResponseEntity customerLogin(@RequestBody JwtRequest authenticationRequest, HttpServletResponse response) {
         String username = authenticationRequest.getUsername();
         String password = authenticationRequest.getPassword();
         Customer customer = new Customer();
         try {
-            customer = customerRepository.findOneByUsernameAndPassword(username,crypto.encrypt(password));
-            if(customer == null){
-               return ResponseEntity.ok("NOT FOUND");
-            }else {
+            customer = customerRepository.findOneByUsernameAndPassword(username, crypto.encrypt(password));
+            if (customer == null) {
+                return ResponseEntity.ok("NOT FOUND");
+            } else {
                 try {
                     authenticate(username, password);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.ok(e.toString());
         }
         final String token = jwtTokenUtil.generateToken(customer);
@@ -66,19 +68,35 @@ public class CustomerController {
 //        cookie.setSecure(true);
 //        cookie.setPath("/");
 //        response.addCookie(cookie);
-        ResponseCookie cookie = ResponseCookie.from("jwt",token) // key & value
+        ResponseCookie cookie = ResponseCookie.from("jwt", token) // key & value
                 .secure(true).httpOnly(true)
-                    .path("/")
+                .path("/")
                 .sameSite("None")
                 .domain(null)
-                .build()
-                ;
+                .maxAge(-1)
+                .build();
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok().body(customer);
     }
-    @PostMapping("/logout")
-    public ResponseEntity customerLogout(HttpServletRequest request) {
-        return ResponseEntity.ok().body("ok");
+//    @GetMapping("/logout")
+
+    //    }
+    @GetMapping("/user/logout")
+    public ResponseEntity customerLogout(HttpServletRequest request, HttpServletResponse response) {
+        System.out.println("OK");
+        try {
+            ResponseCookie cookie = ResponseCookie.from("jwt", null) // key & value
+                    .secure(true).httpOnly(true)
+                    .path("/")
+                    .sameSite("None")
+                    .domain(null)
+                    .maxAge(0)
+                    .build();
+            response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            return ResponseEntity.ok().body("LOGOUT SUCCESSFULLY!");
+        } catch (Exception e) {
+            return ResponseEntity.ok().body(e);
+        }
     }
 
     private void authenticate(String username, String password) throws Exception {
